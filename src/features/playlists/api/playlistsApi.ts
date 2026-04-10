@@ -1,5 +1,10 @@
 import {createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
-import type {CreatePlaylistArgs, PlaylistData, PlaylistsResponse} from "@/features/playlists/api/playlistsApi.types.ts";
+import type {
+    CreatePlaylistArgs,
+    PlaylistData,
+    PlaylistsResponse,
+    UpdatePlaylistArgs
+} from "@/features/playlists/api/playlistsApi.types.ts";
 
 
 export const playlistsApi = createApi({
@@ -14,9 +19,11 @@ export const playlistsApi = createApi({
             return headers
         },
     }),
+    tagTypes: ['Playlist'],
     endpoints: build => ({
         fetchPlaylists: build.query<PlaylistsResponse, void>({
-            query: () => `playlists`
+            query: () => ({ url: `playlists` }),
+            providesTags: ['Playlist'],
         }),
         createPlaylist: build.mutation<{ data: PlaylistData }, CreatePlaylistArgs>({
             query: body => ({
@@ -24,16 +31,26 @@ export const playlistsApi = createApi({
                 method: 'post',
                 body,
             }),
+            invalidatesTags: ['Playlist'],
         }),
         deletePlaylists: build.mutation<void, string>({
-            query: playlistId => {
-                return {
+            query: playlistId => ({
                     method: 'delete',
-                    url: `/playlists/${playlistId}/reactions`
-                }
-            }
+                    url: `/playlists/${playlistId}`
+            }),
+            invalidatesTags: ['Playlist'],
+
+        }),
+        updatePlaylists: build.mutation<void, {playlistId: string, body: UpdatePlaylistArgs}>({
+            query: ({playlistId, body})=>({
+                method: 'put',
+                url:  `/playlists/${playlistId}`,
+                body
+            }),
+            invalidatesTags: ['Playlist'],
+
         })
     }),
 })
 
-export const {useFetchPlaylistsQuery, useDeletePlaylistsMutation, useCreatePlaylistMutation} = playlistsApi
+export const {useFetchPlaylistsQuery, useDeletePlaylistsMutation, useCreatePlaylistMutation, useUpdatePlaylistsMutation} = playlistsApi

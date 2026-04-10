@@ -70,3 +70,4 @@ export type MyEnum = (typeof MyEnum)[keyof typeof MyEnum]
 ## Роутинг
 
 Объект `Path` экспортируется из `src/common/routing/Routing.tsx` и используется везде вместо строковых литералов.
+

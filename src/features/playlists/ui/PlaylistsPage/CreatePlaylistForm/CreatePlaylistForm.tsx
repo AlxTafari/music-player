@@ -6,26 +6,30 @@ type FormValues = CreatePlaylistArgs['data']['attributes']
 
 
 export const CreatePlaylistForm = () => {
-    const { register, handleSubmit } = useForm<FormValues>()
-    const [createPlaylist, result] = useCreatePlaylistMutation()
+    const {register, handleSubmit, reset} = useForm<FormValues>()
+    const [createPlaylist] = useCreatePlaylistMutation()
 
-    const onSubmit: SubmitHandler<FormValues> = ({ title, description }) => {
+    const onSubmit: SubmitHandler<FormValues> = ({title, description}) => {
         createPlaylist({
             data: {
                 type: "playlists",
-                attributes: { title, description },
+                attributes: {title, description},
             },
         })
+            .unwrap()
+            .then(() => {
+                reset()
+            })
     }
 
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <h2>Create new playlist</h2>
             <div>
-                <input {...register('title')} placeholder={'title'} />
+                <input {...register('title')} placeholder={'title'}/>
             </div>
             <div>
-                <input {...register('description')} placeholder={'description'} />
+                <input {...register('description')} placeholder={'description'}/>
             </div>
             <button>create playlist</button>
         </form>
